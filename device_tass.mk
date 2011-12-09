@@ -53,6 +53,7 @@ PRODUCT_PACKAGES += \
     gralloc.tass \
     libOmxCore \
     make_ext4fs \
+    FM \
     dexpreopt \
     screencap
 
