@@ -90,7 +90,6 @@ PRODUCT_COPY_FILES += \
     device/samsung/tass/prebuilt/dma_test.ko:system/lib/modules/dma_test.ko \
     device/samsung/tass/prebuilt/evbug.ko:system/lib/modules/evbug.ko \
     device/samsung/tass/prebuilt/gpuoc.ko:system/lib/modules/gpuoc.ko \
-    device/samsung/tass/prebuilt/librasdioif.ko:system/lib/modules/librasdioif.ko \
     device/samsung/tass/prebuilt/lzo_compress.ko:system/lib/modules/lzo_compress.ko \
     device/samsung/tass/prebuilt/lzo_decompress.ko:system/lib/modules/lzo_decompress.ko \
     device/samsung/tass/prebuilt/oprofile.ko:system/lib/modules/oprofile.ko \
