@@ -102,11 +102,6 @@ PRODUCT_COPY_FILES += \
     device/samsung/tass/init.gt-s5570.rc:root/init.gt-s5570.rc \
     device/samsung/tass/prebuilt/ramzswap.ko:system/lib/modules/ramzswap.ko 
 
-## app add ons
-PRODUCT_COPY_FILES += \
-    device/samsung/tass/apps/BMKG.apk:system/app/BMKG.apk \
-    device/samsung/tass/apps/eSpeakTTS.apk:system/app/eSpeakTTS.apk
-
 ## Wifi Stuff
 PRODUCT_COPY_FILES += \
     device/samsung/tass/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
