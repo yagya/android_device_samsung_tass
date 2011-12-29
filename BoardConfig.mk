@@ -23,6 +23,8 @@ LOCAL_PATH:= $(call my-dir)
 # variant, so that it gets overwritten by the parent (which goes
 # against the traditional rules of inheritance).
 USE_CAMERA_STUB:= false
+BOARD_USE_FROYO_LIBCAMERA := true
+COPYBIT_MSM7K := true
 
 TARGET_NO_BOOTLOADER := true
 
@@ -48,19 +50,29 @@ WIFI_DRIVER_MODULE_NAME     := ar6000
 WITH_JIT := true
 ENABLE_JSC_JIT := true
 JS_ENGINE := v8
+BOARD_USE_SCREENCAP:= true
+BOARD_MOBILEDATA_INTERFACE_NAME:= "pdp0"
 
-#BOARD_HAVE_FM_RADIO := true
-#BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
+# FM Radio
+BOARD_HAVE_FM_RADIO := true
+BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
+BOARD_FM_DEVICE := bcm4325
 
 BOARD_KERNEL_CMDLINE := 
 BOARD_KERNEL_BASE := 0x13600000	 
 BOARD_KERNEL_PAGESIZE := 4096 
 TARGET_PREBUILT_KERNEL := device/samsung/tass/kernel	
-TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/tass/recovery_kernel
 TARGET_RECOVERY_INITRC := device/samsung/tass/recovery.rc
 
+TARGET_PREBUILT_RECOVERY_KERNEL := device/samsung/tass/recovery_kernel
+BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/tass/recovery/recovery_ui.c
+BOARD_CUSTOM_GRAPHICS           := ../../../device/samsung/tass/recovery/graphics.c
+BOARD_USE_USB_MASS_STORAGE_SWITCH := true
+BOARD_UMS_LUNFILE := "/sys/devices/platform/usb_mass_storage/lun0/file"
+
+BOARD_CUSTOM_USB_CONTROLLER := ../../device/samsung/tass/UsbController.cpp
+
 TARGET_PROVIDES_LIBAUDIO := true
-#TARGET_PROVIDES_LIBRIL := true
 
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_BOOTIMAGE_PARTITION_SIZE := 8388608
@@ -68,19 +80,11 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 8388608
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 219938816
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 190054400
 BOARD_FLASH_BLOCK_SIZE := 131072
-BOARD_BML_BOOT_PARTION := "/dev/block/bml8"
-BOARD_BML_RECOVERY_PARTION := "/dev/block/bml9"
-BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/tass/recovery_ui.c
+BOARD_BML_BOOT := "/dev/block/bml8"
+BOARD_BML_RECOVERY := "/dev/block/bml9"
 
-BOARD_USE_USB_MASS_STORAGE_SWITCH := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/devices/platform/usb_mass_storage/lun
-BOARD_UMS_LUNFILE := "/sys/devices/platform/usb_mass_storage/lun0/file"
 
 TARGET_LIBAGL_USE_GRALLOC_COPYBITS := true 
-BOARD_USE_GR_FLIP_32 := true
-BOARD_FB_FORCE_24_BPP := true
-BOARD_FB_SINGLE_BUFFERED := true
-#BOARD_HAS_NO_SELECT_BUTTON := true
 
 ## to enable the GPS HAL
 BOARD_GPS_LIBRARIES := libloc_api

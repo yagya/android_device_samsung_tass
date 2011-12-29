@@ -28,6 +28,7 @@
 #include <linux/kd.h>
 
 #include <pixelflinger/pixelflinger.h>
+#include <cutils/memory.h>
 
 #ifndef BOARD_LDPI_RECOVERY
 	#include "font_10x18.h"
@@ -55,11 +56,11 @@ static int gr_fb_fd = -1;
 static int gr_vt_fd = -1;
 
 static struct fb_var_screeninfo vi;
-static struct fb_fix_screeninfo fi;
 
 static int get_framebuffer(GGLSurface *fb)
 {
     int fd;
+    struct fb_fix_screeninfo fi;
     void *bits;
 
     fd = open("/dev/graphics/fb0", O_RDWR);
@@ -90,20 +91,29 @@ static int get_framebuffer(GGLSurface *fb)
     fb->version = sizeof(*fb);
     fb->width = vi.xres;
     fb->height = vi.yres;
-    fb->stride = fi.line_length / (vi.bits_per_pixel / 8);
+#ifdef BOARD_HAS_JANKY_BACKBUFFER
+    fb->stride = fi.line_length/2;
+#else
+    fb->stride = vi.xres_virtual;
+#endif
     fb->data = bits;
     fb->format = GGL_PIXEL_FORMAT_RGB_565;
-    memset(fb->data, 0, vi.yres * vi.xres * 2);
+    memset(fb->data, 0, vi.yres * vi.xres_virtual * vi.bits_per_pixel / 8);
 
     fb++;
 
     fb->version = sizeof(*fb);
     fb->width = vi.xres;
     fb->height = vi.yres;
-    fb->stride = fi.line_length / (vi.bits_per_pixel / 8);
-    fb->data = (void*) (((unsigned) bits) + (vi.yres * fi.line_length));
+#ifdef BOARD_HAS_JANKY_BACKBUFFER
+    fb->stride = fi.line_length/2;
+    fb->data = (void*) (((unsigned) bits) + vi.yres * fi.line_length);
+#else
+    fb->stride = vi.xres_virtual;
+    fb->data = (void*) (((unsigned) bits) + (vi.yres * vi.xres_virtual * vi.bits_per_pixel / 8));
+#endif
     fb->format = GGL_PIXEL_FORMAT_RGB_565;
-    memset(fb->data, 0, vi.yres * vi.xres * 2);
+    memset(fb->data, 0, vi.yres * vi.xres_virtual * vi.bits_per_pixel / 8);
 
     return fd;
 }
@@ -112,8 +122,8 @@ static void get_memory_surface(GGLSurface* ms) {
   ms->version = sizeof(*ms);
   ms->width = vi.xres;
   ms->height = vi.yres;
-  ms->stride = fi.line_length / (vi.bits_per_pixel / 8);
-  ms->data = malloc(fi.line_length * vi.yres);
+  ms->stride = vi.xres_virtual;
+  ms->data = malloc(vi.xres_virtual * vi.yres * vi.bits_per_pixel / 8);
   ms->format = GGL_PIXEL_FORMAT_RGB_565;
 }
 
@@ -167,18 +177,19 @@ void gr_flip(void)
 #endif
 
     /* copy data from the in-memory surface to the buffer we're about
-     * to make active. */
-    if( vi.bits_per_pixel == 16)
+     * to make active. */ 
+    if(vi.bits_per_pixel == 32)
     {
-    memcpy(gr_framebuffer[gr_active_fb].data, gr_mem_surface.data,
-           fi.line_length * vi.yres);
+        gr_flip_32((unsigned *)gr_framebuffer[gr_active_fb].data, \
+                   (unsigned short *)gr_mem_surface.data,
+                   (vi.xres_virtual * vi.yres));
     }
     else
     {
-        gr_flip_32((unsigned *)gr_framebuffer[gr_active_fb].data, \
-                   (unsigned short *)gr_mem_surface.data, \
-                   ((fi.line_length / (vi.bits_per_pixel / 8)) * vi.yres));
+        memcpy(gr_framebuffer[gr_active_fb].data, gr_mem_surface.data,
+               vi.xres_virtual * vi.yres *2);
     }
+
     /* inform the display driver */
     set_active_framebuffer(gr_active_fb);
 }
